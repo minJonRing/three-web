@@ -7,6 +7,7 @@
 
 <script>
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 export default {
     name: 'Background',
     data() {
@@ -26,9 +27,8 @@ export default {
         createScene() {
             const scene = new THREE.Scene();
             scene.fog = new THREE.FogExp2(0xffffff, 0.002);
-            console.log(scene)
             scene.background = new THREE.Color(0x000000);
-            scene.backgroundBlurriness = 0.2
+            scene.backgroundBlurriness = 1
             this.scene = scene;
         },
         createCamera() {
@@ -38,9 +38,10 @@ export default {
             const near = 1;
             const far = 1000;
             const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-            camera.position.set(0, 1, 10);
+            camera.position.set(0, 1, 100);
             // camera.updateProjectionMatrix();
             this.camera = camera;
+
         },
         createLight() {
             // 光线
@@ -56,9 +57,13 @@ export default {
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.shadowMap.enabled = true;
-            console.log(renderer.domElement)
+            this.canvas = renderer.domElement
             document.querySelector('.background').appendChild(renderer.domElement);
             this.renderer = renderer
+            const controls = new OrbitControls(this.camera, this.canvas);
+            // controls.minPolarAngle = Math.PI / 6
+            // controls.maxPolarAngle = Math.PI / 2.2
+            controls.update();
         },
         resizeRendererToDisplaySize(renderer) {
             const canvas = renderer.domElement;
@@ -78,15 +83,20 @@ export default {
             }
             const time = Date.now() * 0.005;
 
-            this.sphere.rotation.z = 0.01 * time;
+            this.sphere.rotation.y = -0.01 * time;
+            this.sphere.rotation.x = -0.01 * time;
+            // this.sphere.rotation.z = -0.003 * time;
+            // if (this.sphere.position.y > 50) {
+            //     this.sphere.position.y = -50;
+            // }
+            // this.sphere.position.y += 0.05;
 
             const geometry = this.sphere.geometry;
             const attributes = geometry.attributes;
 
             for (let i = 0; i < attributes.size.array.length; i++) {
 
-                attributes.size.array[i] = 14 + 13 * Math.sin(0.1 * i + time);
-
+                // attributes.size.array[i] = 6 + 2 * Math.sin(0.01 * i + time);
             }
 
             attributes.size.needsUpdate = true;
@@ -99,8 +109,8 @@ export default {
             // plane
             // this.createPlane()
             // points
-            const amount = 100000;
-            const radius = 200;
+            const amount = 1000;
+            const radius = 80;
 
             const positions = new Float32Array(amount * 3);
             const colors = new Float32Array(amount * 3);
@@ -115,19 +125,18 @@ export default {
                 vertex.z = (Math.random() * 2 - 1) * radius;
                 vertex.toArray(positions, i * 3);
 
-                if (vertex.x < 0) {
+                // if (vertex.x < 0) {
+                //     color.setHSL(0.5 + 0.1 * (i / amount), 0.7, 0.5);
 
-                    color.setHSL(0.5 + 0.1 * (i / amount), 0.7, 0.5);
-
-                } else {
-
-                    color.setHSL(0.0 + 0.1 * (i / amount), 0.9, 0.5);
-
-                }
-
+                // } else {
+                //     color.setHSL(0.0 + 0.1 * (i / amount), 0.9, 0.5);
+                // }
+                color.setHSL(Math.random(), 0.7, 0.5);
+                // console.log(color)
+                // color.sub(0x6d4862)
                 color.toArray(colors, i * 3);
 
-                sizes[i] = 10;
+                sizes[i] = 5;
 
             }
 
@@ -137,7 +146,6 @@ export default {
             geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
             const material = new THREE.ShaderMaterial({
-
                 uniforms: {
                     color: { value: new THREE.Color(0xffffff) },
                     pointTexture: { value: new THREE.TextureLoader().load('spark1.png') }
