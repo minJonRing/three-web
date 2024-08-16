@@ -1,0 +1,411 @@
+<template>
+    <div class="e-charts">
+        <div class="map"></div>
+        <div class="data"></div>
+        <!-- 图表 -->
+        <div :class="['head', active ? 'active' : '']" @click="active = active === 1 ? 2 : 1">
+            <div class="title">
+                <span class="text">智能数字大屏</span>
+                <span class="shimmer"></span>
+            </div>
+            <div class="time">{{ time }}</div>
+        </div>
+        <Gdp class="container l cl1" :active="active === 1" :eh="300" :inDelay="300" :outDelay="500" />
+        <Increase class="container l cl2" :active="active === 1" :eh="300" :inDelay="500" :outDelay="300" />
+        <Nature class="container l cl3" :active="active === 1" :eh="320" :inDelay="700" :outDelay="100" />
+
+        <Talent class="container r cr1" :active="active === 1" :eh="300" :inDelay="300" :outDelay="500" />
+        <Industry class="container r cr2" :active="active === 1" :eh="300" :inDelay="500" :outDelay="300" />
+        <Status class="container r cr3" :active="active === 1" :eh="320" :inDelay="700" :outDelay="100" />
+    </div>
+</template>
+
+<script>
+import * as echarts from 'echarts';
+import 'echarts-gl';
+import * as dayjs from 'dayjs'
+
+import { ajax } from '@/api/ajax';
+
+import Gdp from './components/gdp.vue'
+import Increase from './components/increase.vue'
+import Nature from './components/nature.vue'
+
+
+import Talent from './components/talent.vue'
+import Industry from './components/industry.vue'
+import Status from './components/status.vue'
+export default {
+    components: {
+        Gdp,
+        Nature,
+        Increase,
+        Talent,
+        Industry,
+        Status
+    },
+    data() {
+        return {
+            active: 0,
+            title: '智能数字化平台',
+            time: '',
+
+        }
+    },
+    mounted() {
+        this.initMap()
+        requestAnimationFrame(this.animate)
+    },
+    methods: {
+        initMap() {
+            const chartDom = document.querySelector('.map');
+            const myChart = echarts.init(chartDom);
+            ajax({
+                method: 'get',
+                url: '/buildings.json',
+            }).then((buildingsGeoJSON) => {
+                echarts.registerMap('buildings', buildingsGeoJSON);
+                var regions = buildingsGeoJSON.features.map(function (feature) {
+                    return {
+                        name: feature.properties.name,
+                        value: Math.max(Math.sqrt(feature.properties.height), 0.1),
+                        height: Math.max(Math.sqrt(feature.properties.height), 0.1)
+                    };
+                });
+                myChart.setOption({
+                    visualMap: {
+                        show: false,
+                        min: 0.4,
+                        max: 4,
+                        inRange: {
+                            color: [
+                                'rgba(255,255,255,1)',
+                                '#4575b4',
+                                '#74add1',
+                                '#abd9e9',
+                                '#e0f3f8',
+                                // '#ffffbf',
+                                // '#fee090',
+                                // '#fdae61',
+                                // '#f46d43',
+                                // '#d73027',
+                                '#5585e5'
+                            ],
+                            // colorAlpha: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                        }
+                    },
+                    series: [
+                        {
+                            type: 'map3D',
+                            map: 'buildings',
+                            shading: 'realistic',
+                            // realisticMaterial: {
+                            //     roughness: 0.6,
+                            //     textureTiling: 20,
+                            //     detailTexture: ROOT_PATH + '/data-gl/asset/woods.jpg'
+                            // },
+                            environment: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                offset: 0, color: '#010f21' // 天空颜色
+                            }, {
+                                offset: 0.7, color: '#011127' // 地面颜色
+                            }, {
+                                offset: 1, color: '#0d274d' // 地面颜色
+                            }], false),
+                            postEffect: {
+                                enable: true,
+                                bloom: {
+                                    enable: false
+                                },
+                                SSAO: {
+                                    enable: true,
+                                    quality: 'medium',
+                                    radius: 10,
+                                    intensity: 1.2
+                                },
+                                depthOfField: {
+                                    enable: false,
+                                    focalDistance: 50,
+                                    focalRange: 20,
+                                    fstop: 2.5,
+                                    blurRadius: 50
+                                }
+                            },
+                            groundPlane: {
+                                show: false,
+                                color: '#333'
+                            },
+                            light: {
+                                main: {
+                                    // color: "#000",
+                                    intensity: 1,
+                                    shadow: true,
+                                    shadowQuality: 'high',
+                                    alpha: 30
+                                },
+                                ambient: {
+                                    // color: "#999",
+                                    intensity: 0.2
+                                },
+                                // ambientCubemap: {
+                                //     texture: '/canyon.hdr',
+                                //     exposure: 2,
+                                //     diffuseIntensity: 1,
+                                //     specularIntensity: 1
+                                // }
+                            },
+                            viewControl: {
+                                // autoRotate: true,
+                                minBeta: -360,
+                                maxBeta: 360,
+                                distance: 60,
+                                alpha: 0,
+                                beta: -40,
+                                animation: true,
+                                animationDurationUpdate: 1400,
+                                animationEasingUpdate: "cubicInOut"
+                            },
+                            itemStyle: {
+                                areaColor: '#666'
+                                // borderColor: '#222',
+                                // borderWidth: 1
+                            },
+                            label: {
+                                color: 'white'
+                            },
+                            silent: true,
+                            instancing: true,
+                            boxWidth: 200,
+                            boxHeight: 1,
+                            data: regions
+                        }
+                    ]
+                });
+                this.$nextTick(() => {
+                    myChart.setOption({
+                        series: {
+                            viewControl: {
+                                distance: 160,
+                                alpha: 80,
+                                beta: 0,
+                            }
+                        }
+                    })
+                    setTimeout(() => {
+                        this.active = 1
+                    }, 600);
+
+                })
+
+            });
+
+        },
+        animate() {
+            this.time = dayjs().format('YYYY-MM-DD HH:mm:ss');
+            requestAnimationFrame(this.animate)
+        }
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+@property --mask {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 33deg;
+}
+
+.e-charts {
+    position: relative;
+    height: 100%;
+
+    .map {
+        height: 100%;
+    }
+
+    .data {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(0, 0, 0, .7), transparent, rgba(0, 0, 0, .7));
+        pointer-events: none;
+    }
+
+    .head {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 18px;
+        z-index: 9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .title {
+            position: relative;
+            --shimmer-hue-1: 213deg;
+            --shimmer-sat-1: 95%;
+            --shimmer-lit-1: 91%;
+            --shimmer-hue-2: 248deg;
+            --shimmer-sat-2: 100%;
+            --shimmer-lit-2: 86%;
+            --shimmer-hue-3: 293deg;
+            --shimmer-sat-3: 78%;
+            --shimmer-lit-3: 89%;
+            --glow-hue: 222deg;
+            --shadow-hue: 180deg;
+            --spring-easing: linear(0, 0.002, 0.01 0.9%, 0.038 1.8%, 0.156, 0.312 5.8%, 0.789 11.1%, 1.015 14.2%,
+                    1.096, 1.157, 1.199, 1.224 20.3%, 1.231, 1.231, 1.226, 1.214 24.6%,
+                    1.176 26.9%, 1.057 32.6%, 1.007 35.5%, 0.984, 0.968, 0.956, 0.949 42%,
+                    0.946 44.1%, 0.95 46.5%, 0.998 57.2%, 1.007, 1.011 63.3%, 1.012 68.3%,
+                    0.998 84%, 1);
+            --spring-duration: 1.33s;
+
+            font-weight: 600;
+            font-size: 20px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            opacity: 0;
+            transform: matrix(1, 0, 0, 1, -50, 0);
+            transition: all var(--spring-duration) var(--spring-easing);
+            text-transform: unset;
+
+            .text {
+                background: linear-gradient(90deg, #fff, #4d8fe0);
+                -webkit-background-clip: text;
+                /* 对文字应用背景裁剪 */
+                -webkit-text-fill-color: transparent;
+                letter-spacing: 4px;
+                font-size: 30px;
+                color: transparent;
+            }
+
+            .shimmer {
+                position: absolute;
+                inset: -40px;
+                border-radius: inherit;
+                mix-blend-mode: color-dodge;
+                mix-blend-mode: plus-lighter;
+                pointer-events: none;
+                /* mask-image: linear-gradient(90deg, transparent 20%, black 88%, transparent 90%);
+                mask-size: 200% 200%;*/
+                mask-position: center;
+                mask-image: conic-gradient(from var(--mask, 0deg),
+                        transparent 0%,
+                        transparent 10%,
+                        black 36%,
+                        black 45%,
+                        transparent 50%,
+                        transparent 60%,
+                        black 85%,
+                        black 95%,
+                        transparent 100%);
+                mask-size: cover;
+                animation: spin 3s linear infinite both -0.5s;
+
+                &::before,
+                &::after {
+                    transition: all 0.6s ease;
+                    opacity: 1;
+                    content: "";
+                    border-radius: inherit;
+                    position: absolute;
+                    inset: 40px;
+                }
+
+                &::before {
+                    box-shadow: 0 0 3px 2px hsl(var(--shimmer-hue-1) 20% 95%),
+                        0 0 7px 4px hsl(var(--shimmer-hue-1) 20% 80%),
+                        0 0 13px 8px hsl(var(--shimmer-hue-2) 40% 60%),
+                        0 0 22px 6px hsl(var(--shimmer-hue-2) 20% 40%);
+                    z-index: -1;
+                }
+
+                &::after {
+                    box-shadow: inset 0 0 0 1px hsl(var(--shimmer-hue-2) 70% 95%),
+                        inset 0 0 3px 1px hsl(var(--shimmer-hue-2) 100% 80%),
+                        inset 0 0 9px 1px hsl(var(--shimmer-hue-2) 100% 70%);
+                    z-index: 2;
+                }
+
+                @keyframes wipe {
+                    0% {
+                        mask-position: 200% center;
+                    }
+
+                    100% {
+                        mask-position: 0% center;
+                    }
+                }
+
+                @keyframes spin {
+                    0% {
+                        --mask: 0deg;
+                    }
+
+                    100% {
+                        --mask: 360deg;
+                    }
+                }
+            }
+
+        }
+
+        .time {
+            color: #fff;
+            font-size: 14px;
+        }
+
+        &.active {
+            .title {
+                opacity: 1;
+                transform: matrix(1, 0, 0, 1, 0, 0);
+            }
+        }
+    }
+
+    .container {
+        position: absolute;
+        top: 0;
+
+        z-index: 9;
+        width: 480px;
+        padding: 0 10px;
+
+        &.l {
+            left: 0;
+        }
+
+        &.cl1 {
+            top: 100px;
+        }
+
+        &.cl2 {
+            top: 420px;
+        }
+
+        &.cl3 {
+            top: 740px;
+        }
+
+        &.r {
+            right: 0;
+        }
+
+        &.cr1 {
+            top: 100px;
+        }
+
+        &.cr2 {
+            top: 420px;
+        }
+
+        &.cr3 {
+            top: 740px;
+        }
+    }
+}
+</style>
