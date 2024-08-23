@@ -16,10 +16,7 @@ export default {
     Background
   },
   mounted() {
-    const w = window.innerWidth
-    const h = window.innerHeight;
-    const app = document.querySelector(".body")
-    // app.style.transform = `matrix(${w / 1920},0,0,${w / 1920},0,0)`
+
   }
 }
 </script>
@@ -32,7 +29,7 @@ export default {
   // display: flex;
   // align-items: center;
   // justify-content: center;
-  background-color: #000;
+
 
   .body {
     flex-shrink: 0;

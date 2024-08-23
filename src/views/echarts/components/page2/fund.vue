@@ -1,20 +1,20 @@
 <template>
-    <div :class="['status', active ? 'active' : '']"
+    <div :class="['gdp', active ? 'active' : '']"
         :style="{ '--indelay': inDelay + 'ms', '--outdelay': outDelay + 'ms' }">
-        <Box title="发展模式" unit="" :ch="ch" :active="active">
+        <Box title="内外资占比" unit="" :ch="ch" :active="active">
             <div ref="echart" class="echart"></div>
         </Box>
     </div>
 </template>
 
 <script>
-import Box from "../box.vue"
+import Box from "../../box.vue"
 
 import * as echarts from 'echarts';
 
 
 export default {
-    name: 'Status',
+    name: 'Gdp',
     props: {
         active: {
             type: Boolean,
@@ -32,6 +32,7 @@ export default {
             type: Number,
             default: 0
         }
+
     },
     components: {
         Box
@@ -60,7 +61,7 @@ export default {
         }
     },
     mounted() {
-        // this.init()
+
     },
     methods: {
         init() {
@@ -74,80 +75,78 @@ export default {
                         { offset: 1, color: '#f2ad1a' }
                     ])
                 ],
+                visualMap: {
+                    min: 0,
+                    max: 150,
+                    show: false,
+                    color: ["#f0bdff", "#edbd85", "#54bd85", "#ed6985"]
+                },
                 grid: {
-                    top: '40px',
+                    top: '20px',
                     left: '20px',
                     right: '20px',
-                    bottom: '40px',
+                    bottom: '30px',
                 },
                 legend: {
-                    show: false,
-                },
-                radar: {
-                    radius: "70%",
-                    // shape: 'circle',
-                    indicator: [
-                        { name: '经济', max: 10 },
-                        { name: '教育', max: 10 },
-                        { name: '人文', max: 10 },
-                        { name: '农业', max: 10 },
-                        { name: '生态', max: 10 },
-                        { name: '历史', max: 10 }
-                    ],
-                    splitArea: {
-                        areaStyle: {
-                            color: 'transparent',
-                        }
+                    show: true,
+                    right: '20px',
+                    textStyle: {
+                        color: "#fff"
                     },
+                    icon: "circle"
+                },
+                dataset: {
+                    source: [
+                        ['product', '企业数量'],
+                        ['内资', 95],
+                        ['外资', 4],
+                        ['合资', 36],
+                        ['国企', 12],
+                    ]
+                },
+                xAxis: {
+                    type: 'category',
                     axisLine: {
+                        show: false,
                         lineStyle: {
-                            color: new echarts.graphic.LinearGradient(0, 0, 1, 1, [
-                                { offset: 0, color: '#d475d4' },
-                                { offset: 1, color: '#d49ed4' }
-                            ])
+                            color: "#fff",
+                            type: 'dotted'
                         }
                     },
-                    splitLine: {
-                        lineStyle: {
-                            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-                                { offset: 0, color: '#3347d1' },
-                                { offset: 1, color: '#3378d1' }
-                            ])
-                        }
-                    },
-                    axisName: {
-                        formatter: '{value}',
-                        color: '#fff',
-                        fontSize: 16,
-                        letterSpacing: 3
-                    },
+                    axisTick: {
+                        show: false
+                    }
                 },
+                yAxis: {
+                    show: false
+                },
+                // Declare several bar series, each will be mapped
+                // to a column of dataset.source by default.
                 series: [
                     {
-                        // name: 'Budget vs spending',
-                        type: 'radar',
-                        data: [
-                            {
-                                value: [9.5, 9.2, 8, 7, 7.8, 6.8],
-                                name: 'Allocated Budget'
-                            }
-                        ]
+                        type: 'bar',
+                        label: {
+                            show: true,
+                            fontSize: 15,
+                            color: "#fff",
+                            position: 'top',
+                        },
                     }
                 ]
             };
             myChart.setOption(option);
-            this.myChart = myChart
 
+            this.myChart = myChart
         },
     }
 }
 </script>
 
 <style lang="scss" scoped>
-.status {
+.gdp {
     transition-delay: var(--outdelay);
     opacity: 0;
-    transform: matrix(1, 0, 0, 1, 100, 0);
+    transform: matrix(1, 0, 0, 1, 0, 100);
     transition-duration: 600ms;
 
     .box {

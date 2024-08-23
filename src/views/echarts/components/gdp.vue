@@ -39,7 +39,6 @@ export default {
     },
     data() {
         return {
-            myChart: null
         }
     },
     computed: {
@@ -56,7 +55,7 @@ export default {
                 }, this.inDelay + 600);
             } else {
                 setTimeout(() => {
-                    this.myChart.dispose()
+                    this.myChart?.dispose()
                 }, this.outDelay + 600);
             }
         }

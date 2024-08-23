@@ -1,11 +1,11 @@
 <template>
-    <div :class="['nature', active ? 'active' : '']"
+    <div ref="p" :class="['nature', active ? 'active' : '']"
         :style="{ '--indelay': inDelay + 'ms', '--outdelay': outDelay + 'ms' }">
-        <Box title="自然资源" unit="平方千米" :ch="ch" :active="active">
-            <div ref="echart" class="echart"></div>
+        <Box title="产业结构" :ch="ch" :active="active">
+            <div ref="echart" class="d3-3d"></div>
             <div class="legend">
-                <div class="total" :style="{ '--indelay': inDelay + 300 + 'ms', '--outdelay': outDelay + 'ms' }">
-                    总面积：<span>{{ total }}</span></div>
+                <!-- <div class="total" :style="{ '--indelay': inDelay + 300 + 'ms', '--outdelay': outDelay + 'ms' }">
+                    总面积：<span>{{ total }}</span></div> -->
                 <div class="item" v-for="(item, j) in legend" :key="j"
                     :style="{ '--color': item.color, '--indelay': (inDelay + 300 + j * 100) + 'ms', '--outdelay': outDelay + 'ms' }">
                     {{
@@ -17,11 +17,11 @@
 </template>
 
 <script>
-import Box from "../box.vue"
+import Box from "../../box.vue"
 
 import * as echarts from 'echarts';
 
-
+import 'echarts-gl';
 export default {
     name: 'Nature',
     props: {
@@ -48,9 +48,11 @@ export default {
     data() {
         return {
             legend: [
-                { product: '未使用地', value: 243, color: "#d475d4" },
-                { product: '农业用地', value: 304, color: "#218fd4" },
-                { product: '建设用地', value: 345, color: "#d48a2b" },
+                { product: '互联网', value: 54, color: "#2b54ff" },
+                { product: '轻工业', value: 21, color: "#a6d1ff" },
+                { product: '服务业', value: 46, color: "#d48a2b" },
+                { product: '半导体', value: 9, color: "#a896ff" },
+                { product: '新能源', value: 17, color: "#fc6369" },
             ]
         }
     },
@@ -90,60 +92,58 @@ export default {
             const option = {
                 color: [
                     new echarts.graphic.LinearGradient(0, 0, 1, 1, [
-                        { offset: 0, color: '#d475d4' },
-                        { offset: 1, color: '#d49ed4' }
+                        { offset: 0, color: '#2b54ff' },
+                        { offset: 1, color: '#a8965e' }
                     ]),
-                    new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-                        { offset: 0, color: '#218fd4' },
-                        { offset: 1, color: '#21bfd4' }
-                    ]), new echarts.graphic.LinearGradient(0, 0, 1, 1, [
+                    new echarts.graphic.LinearGradient(0, 0, 1, 1, [
+                        { offset: 0, color: '#a6d1ff' },
+                        { offset: 1, color: '#ffb0ff' }
+                    ]),
+                    new echarts.graphic.LinearGradient(0, 0, 1, 1, [
                         { offset: 0, color: '#d48a2b' },
                         { offset: 1, color: '#36e38a' }
                     ]),
+                    new echarts.graphic.LinearGradient(0, 0, 1, 1, [
+                        { offset: 0, color: '#a896ff' },
+                        { offset: 1, color: '#a86369' }
+                    ]),
+                    new echarts.graphic.LinearGradient(0, 0, 1, 1, [
+                        { offset: 0, color: '#fc6369' },
+                        { offset: 1, color: '#ffcf69' }
+                    ]),
 
                 ],
-                legend: {
-                    show: false,
-                    top: 'middle',
-                    right: '30px',
-                    width: "100px",
-                    textStyle: {
-                        color: "#fff"
-                    },
-                },
                 dataset: {
                     dimensions: ['product', "value"],
-                    source: [
-                        { product: '未使用地', value: 243 },
-                        { product: '农业用地', value: 304 },
-                        { product: '建设用地', value: 345 },
-                    ].sort(function (a, b) {
+                    source: this.legend.sort(function (a, b) {
                         return a.value - b.value;
                     }),
                 },
                 series: [
                     {
-                        name: '自然资源',
+                        name: 'Access From',
                         type: 'pie',
-                        radius: '70%',
+                        radius: ['10%', '70%'],
                         center: ['30%', '50%'],
-                        roseType: 'radius',
                         label: {
                             show: false,
                             color: 'rgba(255, 255, 255, 0.3)'
                         },
+                        padAngle: 6,
                         itemStyle: {
-                            shadowBlur: 200,
-                            shadowColor: 'rgba(0, 0, 0, 1)'
+                            borderRadius: 10
                         },
-                        animationType: 'scale',
-                        animationEasing: 'elasticOut',
-                        animationDelay: function (idx) {
-                            return Math.random() * 200;
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
                         }
                     }
                 ]
             };
+
             myChart.setOption(option);
             this.myChart = myChart
         },
@@ -159,7 +159,7 @@ export default {
     transition-duration: 600ms;
 
     .box {
-        .echart {
+        .d3-3d {
             height: 100%;
         }
 
