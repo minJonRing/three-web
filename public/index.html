@@ -11,11 +11,11 @@
   </title>
   <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
     crossorigin="anonymous"></script>
+  <script src="./css-doodle.min.js"></script>
 </head>
 
 <body>
   <script type="x-shader/x-vertex" id="vertexshader">
-
 			attribute float size;
 			attribute vec3 customColor;
 
@@ -34,7 +34,6 @@
 			}
 
   </script>
-
   <script type="x-shader/x-fragment" id="fragmentshader">
 
 			uniform vec3 color;
@@ -56,6 +55,7 @@
   </noscript>
   <div id="app"></div>
   <!-- built files will be auto injected -->
+
 </body>
 
 </html>
