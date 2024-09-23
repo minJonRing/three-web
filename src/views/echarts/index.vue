@@ -6,7 +6,7 @@
             <!-- 图表 -->
             <div :class="['head', loog ? 'active' : '']">
                 <div class="title">
-                    <span class="text">智慧数字城市</span>
+                    <span class="text">数字城市</span>
                     <span class="shimmer"></span>
                 </div>
                 <div class="btns">
@@ -67,6 +67,7 @@ import Status from './components/status.vue'
 import Person from './components/person.vue'
 
 import Title from './components/title.vue'
+import { mapActions, mapGetters } from 'vuex';
 export default {
     components: {
         Gdp,
@@ -95,6 +96,7 @@ export default {
         }
     },
     mounted() {
+        this.setLoading(false)
         const w = window.innerWidth
         const h = window.innerHeight;
         const app = document.querySelector(".transform")
@@ -104,6 +106,7 @@ export default {
         requestAnimationFrame(this.animate)
     },
     methods: {
+        ...mapActions(['setLoading']),
         initMap() {
             const chartDom = document.querySelector('.map');
             const myChart = echarts.init(chartDom);

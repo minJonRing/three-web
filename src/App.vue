@@ -7,17 +7,24 @@
     </nav> -->
     <router-view />
   </div>
+  <NavTemp />
+  <Menu />
   <!-- loading -->
   <Loading />
 </template>
 <script>
 import Background from '@/views/background.vue'
 import Loading from '@/components/loading.vue'
+import NavTemp from '@/components/nav.vue'
+import Menu from '@/components/menu.vue'
+
 export default {
   name: "App",
   components: {
     Background,
-    Loading
+    Loading,
+    NavTemp,
+    Menu
   },
   mounted() {
 
@@ -29,8 +36,8 @@ export default {
 
 #app {
   height: 100%;
+  overflow: hidden;
 
-  // overflow: hidden;
   // display: flex;
   // align-items: center;
   // justify-content: center;
@@ -38,6 +45,7 @@ export default {
     position: relative;
     height: 100%;
     z-index: 9;
+    overflow: hidden;
 
     nav {
       position: absolute;

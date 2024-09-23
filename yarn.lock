@@ -5892,6 +5892,11 @@ vue@^3.2.13:
     "@vue/server-renderer" "3.4.34"
     "@vue/shared" "3.4.34"
 
+vuetify@^3.7.1:
+  version "3.7.1"
+  resolved "https://registry.npmmirror.com/vuetify/-/vuetify-3.7.1.tgz#102dc8b6c8795955d874da85375a98e369c102d6"
+  integrity sha512-N1XlczbgeGt/O+JUk72QPrqcDaRIXUdptUciJqGyTvZ9cfMoSlEWs6TZO+dOOfXbKvmIMFMycYg4dgSHDpCPhg==
+
 vuex@^4.0.0:
   version "4.1.0"
   resolved "https://registry.npmmirror.com/vuex/-/vuex-4.1.0.tgz#aa1b3ea5c7385812b074c86faeeec2217872e36c"

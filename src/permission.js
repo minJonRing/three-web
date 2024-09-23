@@ -6,9 +6,10 @@ import getPageTitle from '@/utils/get-page-title'
 router.beforeEach(async (to, from, next) => {
   // 设置浏览器标题
   document.title = getPageTitle(to.meta.title)
-  store.dispatch('setLoading', 1)
+  // store.dispatch('setLoading', 1)
   next()
 })
 
 router.afterEach(() => {
+  store.dispatch('setMenu', false)
 })

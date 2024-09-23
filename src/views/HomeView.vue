@@ -1,57 +1,65 @@
 <template>
   <div class="home">
     <div class="head">
-      <css-doodle class="doodle">
-        :doodle {
-        @size: 1px;
-        overflow: hidden;
-        transform: translate(-100%, -100%);
-        border-radius: 50%;
-        filter: url(#filter);
-        --shadow0:@m100(@r(100vw) @r(100vh) @r(20vmin, 40vmin) @r(20vmin) @pd(#11cbd7, #c6f1e7, #ffffff, #fa4659));
-        --shadow1:@m100(@r(100vw) @r(100vh) @r(20vmin, 40vmin) @r(20vmin) @pd(#11cbd7, #c6f1e7, #ffffff, #00bfff));
-        --shadow2:@m100(@r(100vw) @r(100vh) @r(20vmin, 40vmin) @r(20vmin) @pd(#11cbd7, #c6f1e7, #ffffff, #fa4659));
-        --shadow3:@m100(@r(100vw) @r(100vh) @r(20vmin, 40vmin) @r(20vmin) @pd(#11cbd7, #c6f1e7, #ffffff, #00bfff));
-        box-shadow: var(--shadow0)
-        }
-      </css-doodle>
-      <svg width="0">
-        <filter id="filter">
-          <feTurbulence type="fractalNoise" baseFrequency=".01" numOctaves="10" />
-          <feDisplacementMap in="SourceGraphic" scale="180" />
-        </filter>
-      </svg>
-    </div>
-    <div class="content">
       <css-doodle class="content-doodle">
         :doodle {
-        @grid: 1 / 100vw 100vh / #0a0c27;
+        @grid: 40 / 100vmax;
+        background: #12152f;
         }
-        background-size: 200px 200px;
-        background-image: @doodle(
-        @grid: 6 / 100%;
-        @size: 4px;
-        font-size: 4px;
-        color: hsl(@r240, 30%, 50%);
-        box-shadow: @m3x5(
-        calc(4em - @nx*1em) @ny(*1em)
-        @p(@m3(currentColor), @m2(#0000)),
-        calc(2em + @nx*1em) @ny(*1em)
-        @lp
+        :after {
+        font-family: devicons;
+        content: '\@hex(@rand(58890, 59050))';
+        font-size: 1.5vmax;
+        color: hsla(
+        @rand(360), 70%, 70%,
+        @rand(.9)
         );
-        );
+        }
       </css-doodle>
-      <div class="list">
-        <div class="item" v-for="(item, j) in logos" :key="j">
-          <a class="box" :href="item.href" target="_blank">
-            <div class="icon">
-              <img :src="item.icon" alt="">
-            </div>
-            <div class="text">{{ item.text }}</div>
-          </a>
-        </div>
+      <div class="words">
+        <HomeTitle :anima="anima" />
       </div>
-
+    </div>
+    <!-- 主题内容 -->
+    <div class="content">
+      <div class="layout">
+        <v-container class="art">
+          <v-row no-gutters>
+            <v-col>
+              <div class="sub">相关内容 ( content )</div>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col v-for="(item, j) in contents" :key="j" cols="6" xs="6" sm="4">
+              <div class="item item-nav">
+                <a class="box" @click="handleLink(item)">
+                  <div class="icon">
+                    <img :src="item.icon" alt="">
+                  </div>
+                  <div class="text">{{ item.text }}</div>
+                </a>
+              </div>
+            </v-col>
+          </v-row>
+          <v-row no-gutters style="padding-top: 16px;">
+            <v-col>
+              <div class="sub">相关技术 ( technique )</div>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col v-for="(item, j) in logos" :key="j" cols="6" xs="6" sm="4">
+              <div class="item">
+                <a class="box" :href="item.href" target="_blank">
+                  <div class="icon">
+                    <img :src="item.icon" alt="">
+                  </div>
+                  <div class="text">{{ item.text }}</div>
+                </a>
+              </div>
+            </v-col>
+          </v-row>
+        </v-container>
+      </div>
     </div>
   </div>
 </template>
@@ -64,10 +72,22 @@ import LogoEchart from '@/assets/image/echart.png'
 import LogoVue from '@/assets/image/vue.png'
 import LogoElectron from '@/assets/image/electron.svg'
 import LogoReact from '@/assets/image/react.png'
+
+import Image2 from '@/assets/image/nav/2.webp'
+import Image3 from '@/assets/image/nav/3.png'
+import Image4 from '@/assets/image/nav/4.jpg'
+import Image5 from '@/assets/image/nav/5.png'
+
+import HomeTitle from '@/components/homeTitle.vue'
+
 // @ is an alias to /src
 // import CssDoodle from 'css-doodle'
 export default {
   name: 'HomeView',
+  components: {
+    HomeTitle,
+
+  },
   data() {
     return {
       logos: [
@@ -77,16 +97,34 @@ export default {
         { icon: LogoEchart, text: "Echart.js", href: "https://echarts.apache.org/zh/index.html" },
         { icon: LogoThree, text: "Three.js", href: "https://threejs.org/" },
         { icon: LogoElectron, text: "Electron.js", href: "https://www.electronjs.org/zh/" },
-      ]
+      ],
+      contents: [
+        { icon: Image2, text: "web开发", href: "/list?type=web", link: false },
+        { icon: Image3, text: "智慧大屏", href: "/list?type=big", link: false },
+        { icon: Image5, text: "桌面程序", href: "/list?type=exe", link: false },
+      ],
+      anima: false
     }
   },
   mounted() {
+    // setTimeout(() => {
+    //   this.setLoading(false)
     setTimeout(() => {
-      this.setLoading(false)
-    }, 3000);
+      this.anima = true;
+    }, 600);
+
+    // }, 1000);
   },
   methods: {
-    ...mapActions(["setLoading"])
+    ...mapActions(["setLoading"]),
+    handleLink(i) {
+      const { href, link } = i;
+      if (link) {
+        window.open(href, "_blank")
+      } else {
+        this.$router.push(href)
+      }
+    }
   }
 }
 </script>
@@ -95,7 +133,9 @@ export default {
 .home {
   height: 100%;
   overflow: hidden;
-  --headHeight: 60px;
+  --headHeight: 15vw;
+
+
 
   .head {
     position: relative;
@@ -124,8 +164,22 @@ export default {
         }
       }
     }
-  }
 
+    .words {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-content: center;
+      align-items: center;
+    }
+
+
+
+  }
 
   .content {
     // position: absolute;
@@ -133,6 +187,7 @@ export default {
     // top: 0;
     // left: 0;
     // width: 100%;
+    overflow: auto;
     height: calc(100% - var(--headHeight));
 
     .content-doodle {
@@ -140,50 +195,82 @@ export default {
       height: 100%;
     }
 
-    .list {
+    .layout {
       position: absolute;
       top: 0;
-      left: 50%;
+      left: 0;
       width: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      max-width: 900px;
-      margin: 0 auto;
-      transform: translateX(-50%);
+      height: 100%;
 
-      .item {
-        width: 33.33%;
-        display: flex;
-        justify-content: center;
-        padding: 12px;
+      .art {
+        .sub {
+          font-size: 16px;
+          font-weight: bold;
+          margin-bottom: 16px;
+        }
 
-        .box {
-          backdrop-filter: blur(3px);
-          background-color: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.5);
-          border-radius: 10px;
-          box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
-          min-width: 180px;
-          position: relative;
-          padding: 12px;
-          text-decoration: none;
+        .item {
+          width: 100%;
+          // width: 33.33%;
+          // display: flex;
+          // justify-content: center;
+          padding: 2px;
+          display: inline-block;
 
-          .icon {
-            height: 80px;
+          .box {
+            display: block;
+            // backdrop-filter: blur(3px);
+            background-color: #f9f9f9;
+            // background-color: rgba(255, 255, 255, 0.5);
+            // border: 1px solid rgba(255, 255, 255, 0.5);
+            // border-radius: 10px;
+            // box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
+            // box-shadow: 2px 2px 4px rgba(255, 255, 255, 0.25);
+            padding: 12px;
+            text-decoration: none;
+            cursor: pointer;
 
-            img {
-              display: block;
-              height: 100%;
-              margin: 0 auto;
+            .icon {
+              height: 5vw;
+              min-height: 36px;
+
+              img {
+                display: block;
+                height: 100%;
+                margin: 0 auto;
+              }
+            }
+
+            .text {
+              font-size: clamp(12px, 1.25vw, 24px);
+              font-weight: bold;
+              text-align: center;
+              color: #111;
+              transition-duration: 300ms;
             }
           }
 
-          .text {
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            color: #fff;
+          &.item-nav {
+            .box {
+              .icon {
+                margin-bottom: 6px;
+
+                img {
+                  width: 8vw;
+                  min-width: 66px;
+                  object-fit: cover;
+
+                }
+              }
+            }
+          }
+
+          &:hover {
+            .box {
+              .text {
+                color: deepskyblue;
+              }
+            }
           }
         }
       }
