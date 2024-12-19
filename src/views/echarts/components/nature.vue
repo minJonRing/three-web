@@ -67,7 +67,6 @@ export default {
     },
     watch: {
         active(data) {
-            console.log(data)
             if (data) {
                 setTimeout(() => {
                     this.init()

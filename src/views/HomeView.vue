@@ -1,27 +1,12 @@
 <template>
   <div class="home">
     <div class="head">
-      <css-doodle class="content-doodle">
-        :doodle {
-        @grid: 40 / 100vmax;
-        background: #12152f;
-        }
-        :after {
-        font-family: devicons;
-        content: '\@hex(@rand(58890, 59050))';
-        font-size: 1.5vmax;
-        color: hsla(
-        @rand(360), 70%, 70%,
-        @rand(.9)
-        );
-        }
-      </css-doodle>
       <div class="words">
         <HomeTitle :anima="anima" />
       </div>
     </div>
     <!-- 主题内容 -->
-    <div class="content">
+    <div class="content scroll">
       <div class="layout">
         <v-container class="art">
           <v-row no-gutters>
@@ -30,13 +15,13 @@
             </v-col>
           </v-row>
           <v-row no-gutters>
-            <v-col v-for="(item, j) in contents" :key="j" cols="6" xs="6" sm="4">
+            <v-col v-for="(item, j) in menuList" :key="j" cols="6" xs="6" sm="4">
               <div class="item item-nav">
                 <a class="box" @click="handleLink(item)">
                   <div class="icon">
                     <img :src="item.icon" alt="">
                   </div>
-                  <div class="text">{{ item.text }}</div>
+                  <div class="text">{{ item.name }}</div>
                 </a>
               </div>
             </v-col>
@@ -47,41 +32,52 @@
             </v-col>
           </v-row>
           <v-row no-gutters>
-            <v-col v-for="(item, j) in logos" :key="j" cols="6" xs="6" sm="4">
-              <div class="item">
-                <a class="box" :href="item.href" target="_blank">
+            <v-col v-for="(item, j) in art" :key="j" cols="6" xs="6" sm="4">
+              <div class="item item-art">
+                <a class="box" :href="item.link" target="_blank">
                   <div class="icon">
                     <img :src="item.icon" alt="">
                   </div>
-                  <div class="text">{{ item.text }}</div>
+                  <div class="text">{{ item.name }}</div>
                 </a>
               </div>
             </v-col>
           </v-row>
+          <v-row no-gutters style="padding-top: 16px;">
+            <v-col>
+              <div class="sub">其他 ( other )</div>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col v-for="(item, j) in other" :key="j" cols="6" xs="6" sm="4">
+              <div class="item item-art">
+                <router-link class="box" :to="item.link">
+                  <div class="icon">
+                    <img :src="item.icon" alt="">
+                  </div>
+                  <div class="text">{{ item.name }}</div>
+                </router-link>
+              </div>
+            </v-col>
+          </v-row>
         </v-container>
+      </div>
+      <div class="link">
+        <div class="t">微信：tqr1014080407</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import LogoThree from '@/assets/image/three.png'
-import LogoD3 from '@/assets/image/d3.svg'
-import LogoEchart from '@/assets/image/echart.png'
-import LogoVue from '@/assets/image/vue.png'
-import LogoElectron from '@/assets/image/electron.svg'
-import LogoReact from '@/assets/image/react.png'
-
-import Image2 from '@/assets/image/nav/2.webp'
-import Image3 from '@/assets/image/nav/3.png'
-import Image4 from '@/assets/image/nav/4.jpg'
-import Image5 from '@/assets/image/nav/5.png'
+import { mapActions, mapGetters } from 'vuex';
 
 import HomeTitle from '@/components/homeTitle.vue'
 
 // @ is an alias to /src
 // import CssDoodle from 'css-doodle'
+import Img4 from "@/assets/image/nav/4.jpg"
+import { ajax } from '@/api/ajax';
 export default {
   name: 'HomeView',
   components: {
@@ -90,41 +86,46 @@ export default {
   },
   data() {
     return {
-      logos: [
-        { icon: LogoVue, text: "Vue.js", href: "https://cn.vuejs.org/" },
-        { icon: LogoReact, text: "React.js", href: "https://zh-hans.react.dev/" },
-        { icon: LogoD3, text: "D3.js", href: "https://d3js.org/" },
-        { icon: LogoEchart, text: "Echart.js", href: "https://echarts.apache.org/zh/index.html" },
-        { icon: LogoThree, text: "Three.js", href: "https://threejs.org/" },
-        { icon: LogoElectron, text: "Electron.js", href: "https://www.electronjs.org/zh/" },
-      ],
-      contents: [
-        { icon: Image2, text: "web开发", href: "/list?type=web", link: false },
-        { icon: Image3, text: "智慧大屏", href: "/list?type=big", link: false },
-        { icon: Image5, text: "桌面程序", href: "/list?type=exe", link: false },
+      art: [],
+      other: [
+        { link: '/e-charts', name: "数字大屏", icon: Img4 }
       ],
       anima: false
     }
   },
+  computed: {
+    ...mapGetters(['menuList'])
+  },
   mounted() {
-    // setTimeout(() => {
-    //   this.setLoading(false)
+    if (!this.menuList.length) {
+      this.getDataBySoftware()
+    }
+    this.getDataByArt()
     setTimeout(() => {
       this.anima = true;
     }, 600);
-
-    // }, 1000);
   },
   methods: {
-    ...mapActions(["setLoading"]),
+    ...mapActions(["setLoading", "setMenuList", "setSoftwareId"]),
+    getDataBySoftware() {
+      ajax({
+        url: '/client/software',
+      }).then(({ data }) => {
+        this.setMenuList(data)
+      })
+    },
+    getDataByArt() {
+      ajax({
+        url: '/client/art',
+      }).then(({ data }) => {
+        this.art = data.sort((x, y) => x.sort - y.sort);
+      })
+    },
     handleLink(i) {
-      const { href, link } = i;
-      if (link) {
-        window.open(href, "_blank")
-      } else {
-        this.$router.push(href)
-      }
-    }
+      const { _id } = i;
+      this.setSoftwareId(_id)
+      this.$router.push(`/list`)
+    },
   }
 }
 </script>
@@ -133,14 +134,13 @@ export default {
 .home {
   height: 100%;
   overflow: hidden;
-  --headHeight: 15vw;
-
-
+  --headHeight: 10vw;
 
   .head {
     position: relative;
     height: var(--headHeight);
     overflow: hidden;
+    background-color: #000;
 
     .doodle {
       height: 100%;
@@ -265,6 +265,18 @@ export default {
             }
           }
 
+          &.item-art {
+            .box {
+              .icon {
+                height: 3vw;
+              }
+
+              .text {
+                font-size: clamp(12px, 1vw, 18px);
+              }
+            }
+          }
+
           &:hover {
             .box {
               .text {
@@ -273,6 +285,26 @@ export default {
             }
           }
         }
+      }
+    }
+
+    .link {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      font-size: 12px;
+      background-color: rgba(0, 0, 0, 1);
+      backdrop-filter: blur(4px);
+      padding: 0 16px;
+
+      .t {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        color: #fff;
+        text-align: center;
+        line-height: 2;
       }
     }
   }

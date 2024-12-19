@@ -5,29 +5,29 @@
         <div class="d d3"></div>
         <div class="box">
             <div class="list">
-                <div class="item" style="--delay:300ms;--outdelay:150ms" @click="handleLink('/')">
+                <div class="item" style="--delay:300ms;--outdelay:200ms" @click="handleLink('/')">
                     <img :src="Image1" />
                     <div class="text">主页</div>
                 </div>
-                <div class="item" style="--delay:350ms;--outdelay:100ms" @click="handleLink('/')">
-                    <img :src="Image2" />
-                    <div class="text">web开发</div>
+                <div class="item" v-for="(item, index) in menuList" :key="index"
+                    :style="{ '--delay': `${350 + index * 50}ms`, '--outdelay': `${150 - index * 50}ms` }"
+                    @click="handleLinkTo(item)">
+                    <img :src="item.icon" />
+                    <div class="text">{{ item.name }}</div>
                 </div>
-                <div class="item" style="--delay:400ms;--outdelay:50ms" @click="handleLink('/e-charts')">
-                    <img :src="Image3" />
-                    <div class="text">智慧大屏</div>
-                </div>
-                <div class="item" style="--delay:450ms;--outdelay:0ms" @click="handleLink('/')">
+                <div class="item" style="--delay:450ms;--outdelay:0ms" @click="handleLink('')">
                     <img :src="Image4" />
                     <div class="text">数字阮生</div>
                 </div>
                 <div class="item" style="--delay:500ms;--outdelay:0ms">
-                    <div class="lx">微信: 112233333</div>
                     <div class="lx">邮箱: 101400000@qq.com</div>
                 </div>
             </div>
         </div>
         <!-- <Filings /> -->
+        <v-snackbar v-model="alert" location="top" color="primary" timeout="2000">
+            敬请期待
+        </v-snackbar>
     </div>
 </template>
 
@@ -38,6 +38,7 @@ import Image2 from '@/assets/image/nav/2.webp'
 import Image3 from '@/assets/image/nav/3.png'
 import Image4 from '@/assets/image/nav/4.jpg'
 import Filings from '@/components/filings.vue'
+import { ajax } from '@/api/ajax';
 export default {
     components: {
         Filings
@@ -48,20 +49,37 @@ export default {
             Image2,
             Image3,
             Image4,
+            alert: false
         }
     },
     computed: {
-        ...mapGetters(['menu'])
+        ...mapGetters(['menu', "menuList"])
     },
     mounted() {
-
+        if (!this.menuList.length) {
+            this.getDataBySoftware()
+        }
     },
     methods: {
-        ...mapActions(['setMenu']),
+        ...mapActions(['setMenu', "setMenuList", "setSoftwareId"]),
         handleLink(v) {
-            // this.setMenu(false)
+            if (!v) {
+                this.alert = true;
+                return
+            }
             this.$router.push(v)
-        }
+        },
+        handleLinkTo({ _id }) {
+            this.setSoftwareId(_id)
+            this.$router.push(`/list`)
+        },
+        getDataBySoftware() {
+            ajax({
+                url: '/client/software',
+            }).then(({ data }) => {
+                this.setMenuList(data)
+            })
+        },
     }
 }
 </script>
@@ -122,7 +140,8 @@ export default {
             .item {
                 position: relative;
                 display: block;
-                height: 80px;
+                height: 8vh;
+                max-height: 80px;
                 margin: 32px 0;
                 text-decoration: none;
                 overflow: hidden;
@@ -137,7 +156,7 @@ export default {
                     position: absolute;
                     width: 100%;
                     height: 2px;
-                    background-color: #fff;
+                    background-color: deepskyblue;
                     opacity: 0;
                     left: 100%;
                     bottom: 0;

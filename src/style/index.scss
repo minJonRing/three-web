@@ -9,3 +9,25 @@ body {
     padding: 0;
     box-sizing: border-box;
 }
+
+.scroll {
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+        border-radius: 10px;
+    }
+
+    // 滑块
+    &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background-color: #adadaba4;
+    }
+
+    // 轨道
+    &::-webkit-scrollbar-track {
+        border-radius: 10px;
+        background-color: #fff;
+    }
+}

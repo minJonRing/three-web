@@ -59,7 +59,7 @@ export default {
                             left: 'center',
                             top: 'center',
                             style: {
-                                text: '面向世界 引领未来 服务全球',
+                                text: '引 领 未 来',
                                 fontSize: 34,
                                 font: "宋体",
                                 // fontWeight: 'bold',

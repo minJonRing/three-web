@@ -22,7 +22,6 @@ export default {
     methods: {
         ...mapActions(['setMenu']),
         handleSet(v) {
-            console.log(v)
             this.setMenu(v)
         }
     }

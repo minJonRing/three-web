@@ -13,7 +13,7 @@ export default {
         },
         words: {
             type: String,
-            default: "深 空 Web Development"
+            default: "Web Development"
         }
     },
     mounted() {
@@ -27,7 +27,7 @@ export default {
             var particles = []
             var amount = 0
             var mouse = { x: -100, y: -100 }
-            const radius = 1
+            const radius = 0.05
             const num = 220;
             canvas.width = window.innerWidth;
             canvas.height = box.clientHeight;
@@ -41,19 +41,19 @@ export default {
             function Particle(x, y) {
                 this.x = Math.random() * ww;
                 // this.y = Math.random() * wh;
-                this.y = -20;
+                this.y = Math.random() > 0.5 ? -20 - Math.random() * 50 : canvas.height + Math.random() * 50;
                 this.dest = {
                     x: x,
                     y: y
                 };
-                this.r = Math.random() * 2 + canvas.width / 500;
+                this.r = Math.random() * 2 + canvas.width / 800;
                 this.vx = (Math.random() - 0.5) * 20;
                 this.vy = (Math.random() - 0.5) * 20;
                 this.accX = 0;
                 this.accY = 0;
                 // 缓动时间
-                // this.friction = Math.random() * 0.05 + 0.94;
-                this.friction = 0.94;
+                this.friction = Math.random() * 0.03 + 0.94;
+                // this.friction = 0.94;
 
                 this.color = colors[Math.floor(Math.random() * 6)];
             }
@@ -71,9 +71,10 @@ export default {
 
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
+                ctx.globalAlpha = this.dest.x / this.x / (this.dest.y / this.y);
                 ctx.arc(this.x, this.y, this.r, Math.PI * 2, false);
                 ctx.fill();
-
+                // 与鼠标的交互
                 const a = this.x - mouse.x;
                 const b = this.y - mouse.y;
 
@@ -97,10 +98,10 @@ export default {
                 wh = canvas.height;
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                ctx.font = "bold " + (ww / 15) + "px sans-serif";
+                // 字体大小
+                ctx.font = "bold " + (ww / 20) + "px sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText(this.words, ww / 2, wh / 2 + ww / 15 / 3);
+                ctx.fillText(this.words, ww / 2, wh / 2 + ww / 20 / 3);
 
                 const data = ctx.getImageData(0, 0, ww, wh).data;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);

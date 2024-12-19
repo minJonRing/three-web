@@ -42,7 +42,6 @@ export default {
         ...mapGetters(['loading'])
     },
     mounted() {
-        console.log(this.loading)
     },
     watch: {
 
@@ -61,10 +60,11 @@ $primary-color: orange;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 1);
+    background-color: rgba(255, 255, 255, .7);
+    backdrop-filter: blur(10);
     opacity: 0;
     transition-timing-function: ease-in;
-    transition-duration: 600ms;
+    transition-duration: 300ms;
     pointer-events: none;
     z-index: 999;
 
